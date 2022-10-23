@@ -24,16 +24,16 @@ pub async fn create_user(
                 username: new_user.username
             };
 
-            let data = models::responses::CreateUserResponse{
+            let data = models::responses::create_user_response::CreateUserResponse{
                 user: user
             };
 
-            let response = models::responses::ok(data);
+            let response = models::responses::server_response::Response::ok(data);
 
             (StatusCode::CREATED, Json(response))
         }
         Err(err) => {
-            let response = models::responses::server_error(err.to_string());
+            let response = models::responses::server_response::Response::server_error(err.to_string());
             (StatusCode::INTERNAL_SERVER_ERROR, Json(response))
         }
     }
