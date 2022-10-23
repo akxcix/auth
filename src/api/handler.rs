@@ -16,8 +16,6 @@ pub async fn create_user(
     Json(payload): Json<models::dto::CreateUserRequest>,
     user_service: Arc<user_service::service::UserService>
 ) -> impl IntoResponse {
-    println!("request recieved: {}, {}", payload.username, payload.password);
-
     match user_service.create_user(payload.username, payload.password).await {
         Ok(new_user) => {
             let user = models::dto::User{
@@ -25,7 +23,7 @@ pub async fn create_user(
                 username: new_user.username
             };
 
-            let data = models::responses::create_user_response::CreateUserResponse{
+            let data = models::responses::create_user::CreateUser{
                 user: user
             };
 
