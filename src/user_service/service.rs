@@ -56,8 +56,8 @@ impl UserService<'_> {
         username: String,
         password: String,
     ) -> Result<Option<queries::User>, sqlx::Error> {
-        let userOpt = self.repo_service.fetch_user(username).await?;
-        match userOpt  {
+        let user_opt = self.repo_service.fetch_user(username).await?;
+        match user_opt  {
             Some(user) => {
                 let parsed_hash = PasswordHash::new(&user.password).unwrap();
                 match self.argon2.verify_password(password.as_bytes(), &parsed_hash) {

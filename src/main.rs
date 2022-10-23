@@ -14,11 +14,15 @@ async fn main() -> Result<(), sqlx::Error> {
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     let app = Router::new()
-        .route("/areyouok", get(api::handler::healthcheck))
         .route("/users/create", post({
             let user_service = Arc::clone(&service);
             move |body| api::handler::create_user(body, Arc::clone(&user_service))
-        }));
+        }))
+        .route("/users/login", post({
+            let user_service = Arc::clone(&service);
+            move |body| api::handler::verify_user(body, Arc::clone(&user_service))
+        }))
+        .route("/areyouok", get(api::handler::healthcheck));
     
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
