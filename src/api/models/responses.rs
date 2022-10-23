@@ -27,13 +27,13 @@ pub fn server_error<T: Serialize>(message: String) -> Response<T> {
     }
 }
 
-pub fn bad_request<T: Serialize>(message: String) -> Response<T> {
-    Response { 
-        status: StatusCode::BAD_REQUEST.as_u16(), 
-        data: None,
-        error: Some(message)
-    }
-}
+// pub fn bad_request<T: Serialize>(message: String) -> Response<T> {
+//     Response { 
+//         status: StatusCode::BAD_REQUEST.as_u16(), 
+//         data: None,
+//         error: Some(message)
+//     }
+// }
 
 #[derive(Serialize)]
 pub struct CreateUserResponse {
