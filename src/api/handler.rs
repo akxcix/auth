@@ -2,6 +2,7 @@ use crate::user_service;
 use crate::api::{
     models,
 };
+use crate::api::models::responses::server_response::Response;
 
 use std::sync::Arc;
 use axum::{
@@ -28,13 +29,11 @@ pub async fn create_user(
                 user: user
             };
 
-            let response = models::responses::server_response::Response::ok(data);
 
-            (StatusCode::CREATED, Json(response))
+            Response::ok(data)
         }
         Err(err) => {
-            let response = models::responses::server_response::Response::server_error(err.to_string());
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(response))
+            Response::error(StatusCode::INTERNAL_SERVER_ERROR ,err.to_string())
         }
     }
 }
