@@ -41,6 +41,6 @@ pub async fn create_user(
 }
 
 
-pub async fn root() -> impl IntoResponse {
+pub async fn healthcheck() -> impl IntoResponse {
     Response::ok("like a charm!")
 }
