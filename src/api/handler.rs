@@ -39,3 +39,8 @@ pub async fn create_user(
         }
     }
 }
+
+
+pub async fn root() -> &'static str {
+    "like a charm!"
+}
