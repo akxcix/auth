@@ -1,6 +1,10 @@
 use crate::user_service;
 use crate::api::{
-    models,
+    models::{
+        dtos,
+        requests,
+        responses
+    },
 };
 use crate::api::models::responses::server_response::Response;
 
@@ -13,17 +17,17 @@ use axum::{
 };
 
 pub async fn create_user(
-    Json(payload): Json<models::dto::CreateUserRequest>,
+    Json(payload): Json<requests::create_user::CreateUser>,
     user_service: Arc<user_service::service::UserService>
 ) -> impl IntoResponse {
     match user_service.create_user(payload.username, payload.password).await {
         Ok(new_user) => {
-            let user = models::dto::User{
+            let user = dtos::user::User{
                 id: new_user.id,
                 username: new_user.username
             };
 
-            let data = models::responses::create_user::CreateUser{
+            let data = responses::create_user::CreateUser{
                 user: user
             };
 

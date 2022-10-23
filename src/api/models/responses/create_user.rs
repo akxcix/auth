@@ -1,5 +1,5 @@
 use serde::Serialize;
-use crate::api::models::dto::User;
+use crate::api::models::dtos::user::User;
 
 #[derive(Serialize)]
 pub struct CreateUser {
