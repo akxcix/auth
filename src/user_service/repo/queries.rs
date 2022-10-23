@@ -35,18 +35,18 @@ impl RepoService {
     //     .await
     // }
 
-    // pub async fn fetch_user(self: &Self, username: String) -> Result<Option<User>, sqlx::Error> {
-    //     let query = r#"
-    //     SELECT * 
-    //     FROM users
-    //     WHERE users.username = $1
-    //     "#;
+    pub async fn fetch_user(self: &Self, username: String) -> Result<Option<User>, sqlx::Error> {
+        let query = r#"
+        SELECT * 
+        FROM users
+        WHERE users.username = $1
+        "#;
 
-    //     sqlx::query_as::<_, User>(query)
-    //     .bind(username)
-    //     .fetch_optional(&self.pool)
-    //     .await
-    // }
+        sqlx::query_as::<_, User>(query)
+        .bind(username)
+        .fetch_optional(&self.pool)
+        .await
+    }
 
     pub async fn add_user(self: &Self, username: String, password: String) -> Result<User, sqlx::Error> {
         let query = r#"

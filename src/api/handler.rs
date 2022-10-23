@@ -18,7 +18,7 @@ use axum::{
 
 pub async fn create_user(
     Json(payload): Json<requests::create_user::CreateUser>,
-    user_service: Arc<user_service::service::UserService>
+    user_service: Arc<user_service::service::UserService<'_>>
 ) -> impl IntoResponse {
     match user_service.create_user(payload.username, payload.password).await {
         Ok(new_user) => {
