@@ -41,6 +41,6 @@ pub async fn create_user(
 }
 
 
-pub async fn root() -> &'static str {
-    "like a charm!"
+pub async fn root() -> impl IntoResponse {
+    Response::ok("like a charm!")
 }
