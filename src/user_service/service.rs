@@ -1,7 +1,8 @@
 use crate::user_service::repo::{
+    models,
     queries
 };
-
+use uuid::Uuid;
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -45,17 +46,20 @@ impl UserService<'_> {
         self: &Self,
         username: String,
         password: String
-    ) -> Result<queries::User, sqlx::Error> {
+    ) -> Result<models::User, sqlx::Error> {
         let salt = SaltString::generate(&mut OsRng);
         let hashed_password = self.argon2.hash_password(password.as_bytes(), &salt).unwrap().to_string();
-        self.repo_service.add_user(username, hashed_password).await 
+
+        let id = Uuid::new_v4();
+
+        self.repo_service.add_user(id, username, hashed_password).await 
     }
 
     pub async fn verify_user(
         self: &Self,
         username: String,
         password: String,
-    ) -> Result<Option<queries::User>, sqlx::Error> {
+    ) -> Result<Option<models::User>, sqlx::Error> {
         let user_opt = self.repo_service.fetch_user(username).await?;
         match user_opt  {
             Some(user) => {

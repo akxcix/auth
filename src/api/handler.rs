@@ -23,7 +23,7 @@ pub async fn create_user(
     match user_service.create_user(payload.username, payload.password).await {
         Ok(new_user) => {
             let user = dtos::user::User{
-                id: new_user.id,
+                id: new_user.id.as_simple().to_string(),
                 username: new_user.username
             };
 

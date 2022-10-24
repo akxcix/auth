@@ -1,12 +1,6 @@
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-
-
-#[derive(sqlx::FromRow, Debug)]
-pub struct User {
-    pub id: i32,
-    pub username: String,
-    pub password: String,
-}
+use uuid::Uuid;
+use crate::user_service::repo::models;
 
 #[derive(Clone)]
 pub struct RepoService {
@@ -35,27 +29,28 @@ impl RepoService {
     //     .await
     // }
 
-    pub async fn fetch_user(self: &Self, username: String) -> Result<Option<User>, sqlx::Error> {
+    pub async fn fetch_user(self: &Self, username: String) -> Result<Option<models::User>, sqlx::Error> {
         let query = r#"
         SELECT * 
         FROM users
         WHERE users.username = $1
         "#;
 
-        sqlx::query_as::<_, User>(query)
+        sqlx::query_as::<_, models::User>(query)
         .bind(username)
         .fetch_optional(&self.pool)
         .await
     }
 
-    pub async fn add_user(self: &Self, username: String, password: String) -> Result<User, sqlx::Error> {
+    pub async fn add_user(self: &Self, id: Uuid, username: String, password: String) -> Result<models::User, sqlx::Error> {
         let query = r#"
-        INSERT INTO users(username, password)
-        VALUES ($1, $2)
+        INSERT INTO users(id, username, password)
+        VALUES ($1, $2, $3)
         RETURNING id, username, password
         "#;
 
-        sqlx::query_as::<_, User>(query)
+        sqlx::query_as::<_, models::User>(query)
+        .bind(id)
         .bind(username)
         .bind(password)
         .fetch_one(&self.pool)
