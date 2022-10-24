@@ -26,22 +26,22 @@ pub struct UserService<'a> {
     repo_service: queries::RepoService,
     argon2: Argon2<'a>,
 }
+impl<'a> UserService<'a> {
+    pub async fn new() -> Result<Box<UserService<'a>>, sqlx::Error> {
+        let connection_string = String::from("postgres://localhost/auth");
+        let repo_service = queries::new(connection_string, 5).await?;
 
-pub async fn new() -> Result<UserService<'static>, sqlx::Error> {
-    let connection_string = String::from("postgres://localhost/auth");
-    let repo_service = queries::new(connection_string, 5).await?;
+        let argon2 = Argon2::default();
 
-    let argon2 = Argon2::default();
+        let service = UserService{
+            repo_service: repo_service,
+            argon2: argon2,
+        };
 
-    let service = UserService{
-        repo_service: repo_service,
-        argon2: argon2,
-    };
+        let boxed_service = Box::new(service);
+        Ok(boxed_service)
+    }
 
-    Ok(service)
-}
-
-impl UserService<'_> {
     pub async fn create_user(
         self: &Self,
         username: String,

@@ -7,8 +7,6 @@ use crate::api::{
     },
 };
 use crate::api::models::responses::server_response::Response;
-
-use std::sync::Arc;
 use axum::{
     http::StatusCode,
     response::
@@ -18,7 +16,7 @@ use axum::{
 
 pub async fn create_user(
     Json(payload): Json<requests::create_user::CreateUser>,
-    user_service: Arc<user_service::service::UserService<'_>>,
+    user_service: Box<user_service::service::UserService<'_>>,
 ) -> impl IntoResponse {
     match user_service.create_user(payload.username, payload.password).await {
         Ok(new_user) => {
@@ -42,7 +40,7 @@ pub async fn create_user(
 
 pub async fn verify_user(
     Json(payload): Json<requests::verify_user::VerifyUser>,
-    user_service: Arc<user_service::service::UserService<'_>>,
+    user_service: Box<user_service::service::UserService<'_>>,
 ) -> impl IntoResponse {
     match user_service.verify_user(payload.username, payload.password).await {
         Ok(user_opt) => {
