@@ -35,14 +35,18 @@ impl RepoService {
     }
 
     pub async fn add_user(self: &Self, id: Uuid, username: String, password: String) -> Result<models::User, sqlx::Error> {
+        let timestamp = chrono::Utc::now();
+        
         let query = r#"
-        INSERT INTO users(id, username, password)
-        VALUES ($1, $2, $3)
-        RETURNING id, username, password
+        INSERT INTO users(id, created_at, updated_at, username, password)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, created_at, updated_at, username, password
         "#;
-
+    
         sqlx::query_as::<_, models::User>(query)
         .bind(id)
+        .bind(timestamp)
+        .bind(timestamp)
         .bind(username)
         .bind(password)
         .fetch_one(&self.pool)

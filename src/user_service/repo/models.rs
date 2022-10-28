@@ -1,8 +1,16 @@
-use sqlx;
+use sqlx::{
+    FromRow,
+    types::{
+        Uuid,
+        chrono,
+    }
+};
 
-#[derive(sqlx::FromRow, Debug)]
+#[derive(FromRow, Debug)]
 pub struct User {
-    pub id: sqlx::types::Uuid,
+    pub id: Uuid,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
     pub username: String,
     pub password: String,
 }

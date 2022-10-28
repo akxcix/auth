@@ -7,11 +7,12 @@ edition = "2021"
 
 [dependencies]
 tokio = {version = "1", features = ["full"]}
-sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" , "postgres", "uuid"] }
+sqlx = { version = "0.6", features = [ "runtime-tokio-native-tls" , "postgres", "uuid", "chrono"] }
 axum = "0.5.16"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.68"
 serde_with = "2.0.1"
 argon2 = "0.4"
 rand_core = { version = "0.6", features = ["std"] }
+chrono = "0.4"
 uuid = {version = "1.2.1",features = ["v4", "fast-rng", "macro-diagnostics"]}
