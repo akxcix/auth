@@ -2,6 +2,7 @@ use crate::user_service::repo::{
     models,
     queries
 };
+use crate::user_service::error::ServiceError;
 use uuid::Uuid;
 use argon2::{
     password_hash::{
@@ -10,16 +11,6 @@ use argon2::{
     },
     Argon2
 };
-
-// use axum::{
-//     http::StatusCode,
-//     response::IntoResponse,
-//     Json,
-// };
-// use serde::{
-//     Serialize,
-//     Deserialize,
-// };
 
 #[derive(Clone)]
 pub struct UserService<'a> {
@@ -46,20 +37,22 @@ impl<'a> UserService<'a> {
         self: &Self,
         username: String,
         password: String
-    ) -> Result<models::User, sqlx::Error> {
+    ) -> Result<models::User, ServiceError> {
         let salt = SaltString::generate(&mut OsRng);
         let hashed_password = self.argon2.hash_password(password.as_bytes(), &salt).unwrap().to_string();
 
         let id = Uuid::new_v4();
 
-        self.repo_service.add_user(id, username, hashed_password).await 
+        let result = self.repo_service.add_user(id, username, hashed_password).await?;
+
+        Ok(result)
     }
 
     pub async fn verify_user(
         self: &Self,
         username: String,
         password: String,
-    ) -> Result<Option<models::User>, sqlx::Error> {
+    ) -> Result<Option<models::User>, ServiceError> {
         let user_opt = self.repo_service.fetch_user(username).await?;
         match user_opt  {
             Some(user) => {

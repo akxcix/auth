@@ -1,38 +1,47 @@
-// use crate::api::models::dto;
 use serde::Serialize;
-use serde_with;
 use axum::{
     http::StatusCode,
-    Json
+    Json, 
+    response::IntoResponse,
 };
 
-#[serde_with::skip_serializing_none]
-#[derive(Serialize)]
-pub struct Response<T> {
-    status: u16,
+pub struct Response<T: Serialize> {
+    headers: Vec<(String, String)>,
+    status_code: StatusCode,
     data: Option<T>,
     error: Option<String>
 }
 
-impl<T> Response<T> {
-    pub fn ok(data: T) -> (StatusCode, Json<Response<T>>) {
+impl<T: Serialize> Response<T> {
+    pub fn ok(data: T) -> Response<T> {
         let status_code = StatusCode::OK;
-        let response = Response {
-            status: status_code.as_u16(),
+        let headers = vec![];
+
+        Response {
+            headers: headers,
+            status_code: status_code,
             data: Some(data),
             error: None
-        };
-
-        (status_code, Json(response))
+        }
     }
     
-    pub fn error(status: StatusCode, message: String) -> (StatusCode, Json<Response<T>>) {
-        let response = Response { 
-            status:  status.as_u16(),
+    pub fn error(status_code: StatusCode, message: String) -> Response<T> {
+        let headers = vec![];
+
+        Response { 
+            headers: headers,
+            status_code:  status_code,
             data: None,
             error: Some(message)
-        };
+        }
+    }
+}
 
-        (status, Json(response))
+impl<T: Serialize> IntoResponse for Response<T> {
+    fn into_response(self) -> axum::response::Response {
+        let status_code = self.status_code;
+        let json = Json(self.data);
+
+        (status_code, json).into_response()
     }
 }

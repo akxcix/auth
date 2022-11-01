@@ -59,12 +59,15 @@ version = "0.1.0"
 dependencies = [
  "argon2",
  "axum",
+ "bytes",
  "chrono",
+ "http-body",
  "rand_core",
  "serde",
  "serde_json",
  "serde_with",
  "sqlx",
+ "thiserror",
  "tokio",
  "uuid",
 ]

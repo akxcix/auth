@@ -1,4 +1,3 @@
-use std::future::Future;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use uuid::Uuid;
 use crate::user_service::repo::models;

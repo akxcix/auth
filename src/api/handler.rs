@@ -7,6 +7,7 @@ use crate::api::{
     },
 };
 use crate::api::models::responses::server_response::Response;
+use crate::user_service::error::ServiceError;
 use axum::{
     http::StatusCode,
     response::
