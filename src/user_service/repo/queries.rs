@@ -1,4 +1,5 @@
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use tracing::{info, error};
 use uuid::Uuid;
 use crate::user_service::repo::models;
 
@@ -8,10 +9,19 @@ pub struct RepoService {
 }
 
 pub async fn new(url: String, max_connections: u32) -> Result<RepoService, sqlx::Error> {
-    let pool = PgPoolOptions::new()
+    let pool = match PgPoolOptions::new()
         .max_connections(max_connections)
         .connect(&url)
-        .await?;
+        .await {
+            Ok(pool) => {
+                info!("Successfully connected to database!");
+                pool
+            },
+            Err(err) => {
+                error!("Unable to connect to database: {}", err);
+                return Err(err);
+            }
+        };
 
     let repo_service = RepoService{
         pool: pool

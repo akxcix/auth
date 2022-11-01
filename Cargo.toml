@@ -17,5 +17,5 @@ rand_core = { version = "0.6", features = ["std"] }
 chrono = "0.4"
 uuid = {version = "1.2.1",features = ["v4", "fast-rng", "macro-diagnostics"]}
 thiserror = "1.0.37"
-http-body = "0.4.5"
-bytes = "1.2.1"
+tracing = "0.1"
+tracing-subscriber = "0.3"
