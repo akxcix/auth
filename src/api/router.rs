@@ -7,7 +7,10 @@ use axum::{
 };
 
 pub async fn get_router() -> Result<Router, sqlx::Error> {
-    let service = user_service::service::UserService::new().await?;
+    let dsn = String::from("postgres://localhost/auth");
+
+    let service = user_service::service::UserService::new(dsn).await?;
+    
     let router = Router::new()
         .route("/users/create", post({
             let user_service = service.clone();

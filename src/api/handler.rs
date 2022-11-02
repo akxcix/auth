@@ -15,6 +15,10 @@ use axum::{
     response::IntoResponse
 };
 
+pub async fn healthcheck() -> impl IntoResponse {
+    Response::ok("like a charm!")
+}
+
 pub async fn create_user(
     Json(payload): Json<requests::create_user::CreateUser>,
     user_service: Box<user_service::service::UserService<'_>>,
@@ -69,8 +73,4 @@ pub async fn update_user_password(
     user_service: Box<UserService<'_>>
 ) -> impl IntoResponse {
     unimplemented!()
-}
-
-pub async fn healthcheck() -> impl IntoResponse {
-    Response::ok("like a charm!")
 }

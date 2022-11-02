@@ -10,11 +10,20 @@ pub enum ServiceError {
     NotFound,
 
     #[error("an error occurred with the database")]
-    Sqlx(sqlx::Error),
+    Database(sqlx::Error),
+
+    #[error("an error occurred with the database")]
+    Argon2(argon2::password_hash::Error),
 }
 
 impl From<sqlx::Error> for ServiceError {
     fn from(err: sqlx::Error) -> Self {
-        Self::Sqlx(err)
+        Self::Database(err)
+    }
+}
+
+impl From<argon2::password_hash::Error> for ServiceError {
+    fn from(err: argon2::password_hash::Error) -> Self {
+        Self::Argon2(err)
     }
 }

@@ -1,6 +1,6 @@
 use crate::user_service::repo::{
     models,
-    queries
+    service
 };
 use crate::user_service::error::ServiceError;
 use uuid::Uuid;
@@ -14,14 +14,12 @@ use argon2::{
 
 #[derive(Clone)]
 pub struct UserService<'a> {
-    repo_service: queries::RepoService,
+    repo_service: service::RepoService,
     argon2: Argon2<'a>,
 }
 impl<'a> UserService<'a> {
-    pub async fn new() -> Result<Box<UserService<'a>>, sqlx::Error> {
-        let connection_string = String::from("postgres://localhost/auth");
-        let repo_service = queries::new(connection_string, 5).await?;
-
+    pub async fn new(dsn: String) -> Result<Box<UserService<'a>>, sqlx::Error> {
+        let repo_service = service::new(dsn, 5).await?;
         let argon2 = Argon2::default();
 
         let service = UserService{
@@ -40,7 +38,6 @@ impl<'a> UserService<'a> {
     ) -> Result<models::User, ServiceError> {
         let salt = SaltString::generate(&mut OsRng);
         let hashed_password = self.argon2.hash_password(password.as_bytes(), &salt).unwrap().to_string();
-
         let id = Uuid::new_v4();
 
         let result = self.repo_service.add_user(id, username, hashed_password).await?;
@@ -56,19 +53,14 @@ impl<'a> UserService<'a> {
         let user_opt = self.repo_service.fetch_user(username).await?;
         match user_opt  {
             Some(user) => {
-                let parsed_hash = PasswordHash::new(&user.password).unwrap();
+                let parsed_hash = PasswordHash::new(&user.password)?;
                 match self.argon2.verify_password(password.as_bytes(), &parsed_hash) {
-                    Ok(_) => {
-                        Ok(Some(user))
-                    },
-                    Err(_) => {
-                        Ok(None)
-                    }
+                    Ok(_) => Ok(Some(user)),
+                    Err(_) => Err(ServiceError::NotFound)
                 }
             },
-            None => {
-                Ok(None)
-            }
+            None => Err(ServiceError::NotFound)
         }
     }
+
 }
