@@ -1,4 +1,4 @@
-use crate::user_service;
+use crate::user_service::{self, service::UserService};
 use crate::api::{
     models::{
         dtos,
@@ -62,6 +62,13 @@ pub async fn verify_user(
             Response::error(StatusCode::INTERNAL_SERVER_ERROR ,err.to_string())
         }
     }
+}
+
+pub async fn update_user_password(
+    Json(payload): Json<requests::update_password::UpdatePassword>,
+    user_service: Box<UserService<'_>>
+) -> impl IntoResponse {
+    unimplemented!()
 }
 
 pub async fn healthcheck() -> impl IntoResponse {
