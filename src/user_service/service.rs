@@ -63,4 +63,29 @@ impl<'a> UserService<'a> {
         }
     }
 
+    pub async fn update_password(
+        self: &Self,
+        username: String,
+        password: String,
+        new_password: String,
+    ) -> Result<Option<models::User>, ServiceError> {
+        let user_opt = self.repo_service.fetch_user(username.clone()).await?;
+        match user_opt  {
+            Some(user) => {
+                let parsed_hash = PasswordHash::new(&user.password)?;
+                match self.argon2.verify_password(password.as_bytes(), &parsed_hash) {
+                    Ok(_) => {
+                        let salt = SaltString::generate(&mut OsRng);
+                        let hashed_new_password = self.argon2.hash_password(new_password.as_bytes(), &salt).unwrap().to_string();
+
+                        let result = self.repo_service.update_user_password(username, hashed_new_password).await?;
+
+                        Ok(Some(result))
+                    },
+                    Err(_) => Err(ServiceError::NotFound)
+                }
+            },
+            None => Err(ServiceError::NotFound)
+        }
+    }
 }
