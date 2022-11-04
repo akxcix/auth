@@ -6,7 +6,7 @@ use tracing::info;
 use tracing_subscriber;
 
 #[tokio::main]
-async fn main() -> Result<(), sqlx::Error> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
     
     info!("Starting server...");
